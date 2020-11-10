@@ -1,9 +1,6 @@
 ﻿using HarmonyLib;
 using PulsarPluginLoader.Patches;
-using PulsarPluginLoader.Utilities;
-using System.CodeDom;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection.Emit;
 
 namespace Alarms
@@ -56,7 +53,7 @@ namespace Alarms
                 new CodeInstruction(OpCodes.Or),
                 new CodeInstruction(OpCodes.Stloc_S, 77)
             };
-            IEnumerable<CodeInstruction> blackhole = HarmonyHelpers.PatchBySequence(meltdownlights, TargetSequence, InjectedSequence, HarmonyHelpers.PatchMode.AFTER);
+            IEnumerable<CodeInstruction> sectorlights = HarmonyHelpers.PatchBySequence(meltdownlights, TargetSequence, InjectedSequence, HarmonyHelpers.PatchMode.AFTER);
             TargetSequence = new List<CodeInstruction>()
             {
                 new CodeInstruction(OpCodes.Ldarg_0),
@@ -70,15 +67,29 @@ namespace Alarms
             };
             InjectedSequence = new List<CodeInstruction>()
             {
-                new CodeInstruction(OpCodes.Ldloc_S, 77), //use the number after the V_ for flags (like flag9)
+                new CodeInstruction(OpCodes.Ldloc_S, 77), //start blackhole
                 new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PLServer),"GetCurrentSector")),
                 new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(PLSectorInfo),"get_VisualIndication")),
                 new CodeInstruction(OpCodes.Ldc_I4_S, 0x1F),
                 new CodeInstruction(OpCodes.Ceq),
                 new CodeInstruction(OpCodes.Or),
-                new CodeInstruction(OpCodes.Stloc_S, 77)
+                new CodeInstruction(OpCodes.Stloc_S, 77), //end blackhole
+                new CodeInstruction(OpCodes.Ldloc_S, 77), //start CU asteroid encounter
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PLServer),"GetCurrentSector")),
+                new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(PLSectorInfo),"get_VisualIndication")),
+                new CodeInstruction(OpCodes.Ldc_I4_S, 0x70),
+                new CodeInstruction(OpCodes.Ceq),
+                new CodeInstruction(OpCodes.Or),
+                new CodeInstruction(OpCodes.Stloc_S, 77), //end CU asteroid encounter
+                new CodeInstruction(OpCodes.Ldloc_S, 77), //start
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PLServer),"GetCurrentSector")),
+                new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(PLSectorInfo),"get_VisualIndication")),
+                new CodeInstruction(OpCodes.Ldc_I4_S, 0x86),
+                new CodeInstruction(OpCodes.Ceq),
+                new CodeInstruction(OpCodes.Or),
+                new CodeInstruction(OpCodes.Stloc_S, 77), //end 
             };
-            return HarmonyHelpers.PatchBySequence(blackhole, TargetSequence, InjectedSequence, HarmonyHelpers.PatchMode.AFTER, HarmonyHelpers.CheckMode.NONNULL);
+            return HarmonyHelpers.PatchBySequence(sectorlights, TargetSequence, InjectedSequence, HarmonyHelpers.PatchMode.AFTER, HarmonyHelpers.CheckMode.NONNULL);
         }
     }
     [HarmonyPatch(typeof(PLPlayer), "Update")]
