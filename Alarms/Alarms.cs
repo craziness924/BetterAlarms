@@ -40,7 +40,7 @@ namespace Alarms
                 new CodeInstruction(OpCodes.Ldc_R4, .98f),
                 new CodeInstruction(OpCodes.Mul),
             };
-            IEnumerable<CodeInstruction> meltdownlights = HarmonyHelpers.PatchBySequence(shieldlights, TargetSequence, InjectedSequence, HarmonyHelpers.PatchMode.REPLACE);
+            IEnumerable<CodeInstruction> meltdownlights = HarmonyHelpers.PatchBySequence(shieldlights, TargetSequence, InjectedSequence, HarmonyHelpers.PatchMode.REPLACE); 
             TargetSequence = new List<CodeInstruction>()
             {
                 new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PLServer),"GetCurrentSector")) // use AcessTools.Field(typeof(class), "Method)) to call bools in IL, also this isn't futureproof at all lmao 
@@ -53,7 +53,8 @@ namespace Alarms
                 new CodeInstruction(OpCodes.Or),
                 new CodeInstruction(OpCodes.Stloc_S, 77)
             };
-            IEnumerable<CodeInstruction> sectorlights = HarmonyHelpers.PatchBySequence(meltdownlights, TargetSequence, InjectedSequence, HarmonyHelpers.PatchMode.AFTER);
+
+            IEnumerable<CodeInstruction> sectorlights = HarmonyHelpers.PatchBySequence(meltdownlights, TargetSequence, InjectedSequence, HarmonyHelpers.PatchMode.AFTER); //adds sectors that trigger alarm lights
             TargetSequence = new List<CodeInstruction>()
             {
                 new CodeInstruction(OpCodes.Ldarg_0),
@@ -81,13 +82,13 @@ namespace Alarms
                 new CodeInstruction(OpCodes.Ceq),
                 new CodeInstruction(OpCodes.Or),
                 new CodeInstruction(OpCodes.Stloc_S, 77), //end CU asteroid encounter
-                new CodeInstruction(OpCodes.Ldloc_S, 77), //start
+                new CodeInstruction(OpCodes.Ldloc_S, 77), //start yes
                 new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PLServer),"GetCurrentSector")),
                 new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(PLSectorInfo),"get_VisualIndication")),
                 new CodeInstruction(OpCodes.Ldc_I4_S, 0x86),
                 new CodeInstruction(OpCodes.Ceq),
                 new CodeInstruction(OpCodes.Or),
-                new CodeInstruction(OpCodes.Stloc_S, 77), //end 
+                new CodeInstruction(OpCodes.Stloc_S, 77), //end yes
             };
             return HarmonyHelpers.PatchBySequence(sectorlights, TargetSequence, InjectedSequence, HarmonyHelpers.PatchMode.AFTER, HarmonyHelpers.CheckMode.NONNULL);
         }
@@ -112,9 +113,8 @@ namespace Alarms
             return HarmonyHelpers.PatchBySequence(instructions, TargetSequence, InjectedSequence, HarmonyHelpers.PatchMode.REPLACE);
         }
     }
-
 }
-/* it's difficult to make meltdown alarm work so it's here for now haha funny
+/* hi if you're reading this, then here's the code that should trigger the AlarmSFX during a meltdown, but it's broken for w/e reason. Lmk if you can get it fixed
 [HarmonyPatch(typeof(PLPlayer), "Update")]
 [HarmonyDebug]
 class MeltdownSFX

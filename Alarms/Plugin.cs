@@ -8,11 +8,11 @@ namespace Alarms
 
         public override string Author => "craziness924";
 
-        public override string Name => "BetterAlarms";
+        public override string Name => "Alarms";
 
         public override string HarmonyIdentifier()
         {
-            return "craziness924.BetterAlarms";
+            return "craziness924.Alarms";
         }
     }
 }
