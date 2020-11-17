@@ -24,7 +24,7 @@ namespace Alarms
             List<CodeInstruction> InjectedSequence = new List<CodeInstruction>()
             {
                 new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(PLShipStats), "get_HullMax")),
-                new CodeInstruction(OpCodes.Ldc_R4, .4f),
+                new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(Global), "hull")), //default value is .4f
                 new CodeInstruction(OpCodes.Mul),
             };
             IEnumerable<CodeInstruction> shieldlights = HarmonyHelpers.PatchBySequence(instructions, TargetSequence, InjectedSequence, HarmonyHelpers.PatchMode.REPLACE);
@@ -37,7 +37,7 @@ namespace Alarms
             InjectedSequence = new List<CodeInstruction>()
             {
                 new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(PLShipStats), "get_ShieldsMax")),
-                new CodeInstruction(OpCodes.Ldc_R4, .98f),
+                new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(Global), "shield" )), //default value is .98f
                 new CodeInstruction(OpCodes.Mul),
             };
             IEnumerable<CodeInstruction> meltdownlights = HarmonyHelpers.PatchBySequence(shieldlights, TargetSequence, InjectedSequence, HarmonyHelpers.PatchMode.REPLACE); 
@@ -82,13 +82,28 @@ namespace Alarms
                 new CodeInstruction(OpCodes.Ceq),
                 new CodeInstruction(OpCodes.Or),
                 new CodeInstruction(OpCodes.Stloc_S, 77), //end CU asteroid encounter
-                new CodeInstruction(OpCodes.Ldloc_S, 77), //start yes
+                new CodeInstruction(OpCodes.Ldloc_S, 77), 
                 new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PLServer),"GetCurrentSector")),
                 new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(PLSectorInfo),"get_VisualIndication")),
                 new CodeInstruction(OpCodes.Ldc_I4_S, 0x86),
                 new CodeInstruction(OpCodes.Ceq),
                 new CodeInstruction(OpCodes.Or),
-                new CodeInstruction(OpCodes.Stloc_S, 77), //end yes
+                new CodeInstruction(OpCodes.Stloc_S, 77), 
+                new CodeInstruction(OpCodes.Ldloc_S, 77), //start fire yes
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PLShipInfo),"CountNonNullFires")),
+                new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(Global), "firecount")), //default value is 17
+                new CodeInstruction(OpCodes.Cgt),
+                new CodeInstruction(OpCodes.Or),
+                new CodeInstruction(OpCodes.Stloc_S, 77), //end fire yes
+                new CodeInstruction(OpCodes.Ldloc_S, 77), //start o2
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(PLShipInfoBase), "MyStats")),
+                new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(PLShipStats),"get_OxygenLevel")),
+                new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(Global), "o2")), //o2 is .18f by default
+                new CodeInstruction(OpCodes.Clt),
+                new CodeInstruction(OpCodes.Or),
+                new CodeInstruction(OpCodes.Stloc_S, 77), //end o2 
             };
             return HarmonyHelpers.PatchBySequence(sectorlights, TargetSequence, InjectedSequence, HarmonyHelpers.PatchMode.AFTER, HarmonyHelpers.CheckMode.NONNULL);
         }
@@ -107,7 +122,7 @@ namespace Alarms
             List<CodeInstruction> InjectedSequence = new List<CodeInstruction>()
             {
                 new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(PLShipStats), "get_ShieldsMax")),
-                new CodeInstruction(OpCodes.Ldc_R4, .98f),
+                new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(Global),"shield")),
                 new CodeInstruction(OpCodes.Mul),
             };
             return HarmonyHelpers.PatchBySequence(instructions, TargetSequence, InjectedSequence, HarmonyHelpers.PatchMode.REPLACE);
