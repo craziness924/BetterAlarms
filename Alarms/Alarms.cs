@@ -47,11 +47,11 @@ namespace Alarms
             };
             InjectedSequence = new List<CodeInstruction>()
             {
-                new CodeInstruction(OpCodes.Ldloc_S, 79), //use the number after the V_ for flags (like flag9)
+                new CodeInstruction(OpCodes.Ldloc_S, 77), //use the number after the V_ for flags (like flag9)
                 new CodeInstruction(OpCodes.Ldarg_0),
                 new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PLShipInfoBase),"IsReactorTempCritical")),
                 new CodeInstruction(OpCodes.Or),
-                new CodeInstruction(OpCodes.Stloc_S, 79)
+                new CodeInstruction(OpCodes.Stloc_S, 77)
             };
 
             IEnumerable<CodeInstruction> sectorlights = HarmonyHelpers.PatchBySequence(meltdownlights, TargetSequence, InjectedSequence, HarmonyHelpers.PatchMode.AFTER); //adds sectors that trigger alarm lights
@@ -68,42 +68,42 @@ namespace Alarms
             };
             InjectedSequence = new List<CodeInstruction>()
             {
-                new CodeInstruction(OpCodes.Ldloc_S, 79), //start blackhole
+                new CodeInstruction(OpCodes.Ldloc_S, 77), //start blackhole
                 new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PLServer),"GetCurrentSector")),
                 new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(PLSectorInfo),"get_VisualIndication")),
                 new CodeInstruction(OpCodes.Ldc_I4_S, 0x1F),
                 new CodeInstruction(OpCodes.Ceq),
                 new CodeInstruction(OpCodes.Or),
-                new CodeInstruction(OpCodes.Stloc_S, 79), //end blackhole
-                new CodeInstruction(OpCodes.Ldloc_S, 79), //start CU asteroid encounter
+                new CodeInstruction(OpCodes.Stloc_S, 77), //end blackhole
+                new CodeInstruction(OpCodes.Ldloc_S, 77), //start CU asteroid encounter
                 new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PLServer),"GetCurrentSector")),
                 new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(PLSectorInfo),"get_VisualIndication")),
                 new CodeInstruction(OpCodes.Ldc_I4_S, 0x70),
                 new CodeInstruction(OpCodes.Ceq),
                 new CodeInstruction(OpCodes.Or),
-                new CodeInstruction(OpCodes.Stloc_S, 79), //end CU asteroid encounter
-                new CodeInstruction(OpCodes.Ldloc_S, 79),
+                new CodeInstruction(OpCodes.Stloc_S, 77), //end CU asteroid encounter
+                new CodeInstruction(OpCodes.Ldloc_S, 77),
                 new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PLServer),"GetCurrentSector")),
                 new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(PLSectorInfo),"get_VisualIndication")),
                 new CodeInstruction(OpCodes.Ldc_I4_S, 0x86),
                 new CodeInstruction(OpCodes.Ceq),
                 new CodeInstruction(OpCodes.Or),
-                new CodeInstruction(OpCodes.Stloc_S, 79),
-                new CodeInstruction(OpCodes.Ldloc_S, 79), //start fire yes
+                new CodeInstruction(OpCodes.Stloc_S, 77),
+                new CodeInstruction(OpCodes.Ldloc_S, 77), //start fire yes
                 new CodeInstruction(OpCodes.Ldarg_0),
                 new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PLShipInfo),"CountNonNullFires")),
                 new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(Global), "firecount")), //default value is 17
                 new CodeInstruction(OpCodes.Cgt),
                 new CodeInstruction(OpCodes.Or),
-                new CodeInstruction(OpCodes.Stloc_S, 79), //end fire yes
-                new CodeInstruction(OpCodes.Ldloc_S, 79), //start o2
+                new CodeInstruction(OpCodes.Stloc_S, 77), //end fire yes
+                new CodeInstruction(OpCodes.Ldloc_S, 77), //start o2
                 new CodeInstruction(OpCodes.Ldarg_0),
                 new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(PLShipInfoBase), "MyStats")),
                 new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(PLShipStats),"get_OxygenLevel")),
                 new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(Global), "o2")), //o2 is .18f by default
                 new CodeInstruction(OpCodes.Clt),
                 new CodeInstruction(OpCodes.Or),
-                new CodeInstruction(OpCodes.Stloc_S, 79), //end o2 
+                new CodeInstruction(OpCodes.Stloc_S, 77), //end o2 
             };
             return HarmonyHelpers.PatchBySequence(sectorlights, TargetSequence, InjectedSequence, HarmonyHelpers.PatchMode.AFTER, HarmonyHelpers.CheckMode.NONNULL);
         }
