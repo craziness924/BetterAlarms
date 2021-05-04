@@ -23,9 +23,7 @@ namespace Alarms
             if (args.Length > 1)
             {
                 yes = float.TryParse(args[1], out woah);
-
             }
-
 
             switch (args[0].ToLower())
             {
@@ -37,7 +35,7 @@ namespace Alarms
                     }
                     else
                     {
-                        Messaging.Notification($"Argument not found, current value is {Global.hull}");
+                        Messaging.Notification($"Argument incorrect or not found, current hull threshold is {Global.hull}");
                     }
                     break;
                 case "shield":
@@ -48,7 +46,7 @@ namespace Alarms
                     }
                     else
                     {
-                        Messaging.Notification($"Argument not found, current value is {Global.shield}");
+                        Messaging.Notification($"Argument incorrect or not found, current shield threshold is {Global.shield}");
                     }
                     break;
                 case "o2":
@@ -59,7 +57,7 @@ namespace Alarms
                     }
                     else
                     {
-                        Messaging.Notification($"Argument not found, current value is {Global.o2}");
+                        Messaging.Notification($"Argument incorrect or not found, current O2 threshold is {Global.o2}");
                     }
 
                     break;
@@ -71,31 +69,43 @@ namespace Alarms
                     }
                     else
                     {
-                        Messaging.Notification($"Argument not found, current value is {Global.firecount}");
+                        Messaging.Notification($"Argument incorrect or not found, current fire threshold is {Global.firecount}");
                     }
                     break;
-                case "reset":
+                case "flashes":
+                    if (yes)
+                    {
+                        Global.flashcount = (int)woah;
+                        Messaging.Notification($"Red alert flash sound count set to {woah}");
+                    }
+                    else
+                    {
+                        Messaging.Notification($"Argument incorrect or not found, current number of red alert sounds is {Global.flashcount}");
+                    }
+                    break;
+                case "reset":   
                     {
                         Global.hull = .40f;
                         Global.shield = .98f;
                         Global.o2 = .15f;
                         Global.firecount = 15;
+                        Global.flashcount = 10;
                         PLXMLOptionsIO.Instance.CurrentOptions.SetStringValue("AlarmSettings", $"{Global.hull} {Global.shield} {Global.o2} {Global.firecount}");
                         Messaging.Notification("All values set to defaults!");
                     }
                     break;
                 case "values":
                     {
-                        Messaging.Notification($"Hull %: {Global.hull}\nShield %: {Global.shield}\nOxygen %: {Global.o2}\nFires: {Global.firecount}");
+                        Messaging.Notification($"Hull %: {Global.hull}\nShield %: {Global.shield}\nOxygen %: {Global.o2}\nFires: {Global.firecount}\nAlert Flashes: {Global.flashcount}");
                     }
                     break;
                 default:
                     Messaging.Notification("Subcommand not found");
                     break;
             }
-            if(yes)
+            if (yes)
             {
-                PLXMLOptionsIO.Instance.CurrentOptions.SetStringValue("AlarmSettings", $"{Global.hull} {Global.shield} {Global.o2} {Global.firecount}");
+                PLXMLOptionsIO.Instance.CurrentOptions.SetStringValue("AlarmSettings", $"{Global.hull} {Global.shield} {Global.o2} {Global.firecount} {Global.flashcount}");
             }
             return false;
         }
@@ -107,7 +117,7 @@ namespace Alarms
 
         public string UsageExample()
         {
-            return "/alarms [hull | shield | o2 | firecount | reset | values]";
+            return "/alarms [hull | shield | o2 | firecount | flashes | reset | values]";
         }
     }
 }

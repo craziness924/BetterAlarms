@@ -4,7 +4,7 @@ namespace Alarms
 {
     public class Plugin : PulsarPlugin
     {
-        public override string Version => "2.1";
+        public override string Version => "2.2";
 
         public override string Author => "craziness924";
 
