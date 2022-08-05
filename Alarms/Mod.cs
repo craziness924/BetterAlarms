@@ -1,10 +1,10 @@
-﻿using PulsarPluginLoader; //
+﻿using PulsarModLoader; 
 
 namespace Alarms
 {
-    public class Plugin : PulsarPlugin
+    public class Mod : PulsarMod
     {
-        public override string Version => "2.2";
+        public override string Version => "2.35";
 
         public override string Author => "craziness924";
 

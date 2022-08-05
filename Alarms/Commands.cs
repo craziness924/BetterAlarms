@@ -1,21 +1,21 @@
-﻿using PulsarPluginLoader.Chat.Commands;
-using PulsarPluginLoader.Utilities;
+﻿using PulsarModLoader.Chat.Commands.CommandRouter;
+using PulsarModLoader.Utilities;
 
 namespace Alarms
 {
-    class Commands : IChatCommand
+    class Commands : ChatCommand
     {
-        public string[] CommandAliases()
+        public override string[] CommandAliases()
         {
             return new string[] { "alarms", "alarm" };
         }
 
-        public string Description()
+        public override string Description()
         {
             return "controls the behavior of the Alarms plugin";
         }
 
-        public bool Execute(string arguments, int SenderID)
+        public override void Execute(string arguments)
         {
             string[] args = arguments.Split(' ');
             bool yes = false;
@@ -83,6 +83,28 @@ namespace Alarms
                         Messaging.Notification($"Argument incorrect or not found, current number of red alert sounds is {Global.flashcount}");
                     }
                     break;
+                case "hspeed":
+                    if (yes)
+                    {
+                        Global.horspeed = woah;
+                        Messaging.Notification($"Horizontal speed of alarms set to {woah}");
+                    }
+                    else
+                    {
+                        Messaging.Notification($"Argument incorrect or not found, current horizontal speed of lights is {Global.horspeed}");
+                    }
+                    break;
+                case "vspeed":
+                    if (yes)
+                    {
+                        Global.verspeed = woah;
+                        Messaging.Notification($"Vertical speed of alarms set to {woah}");
+                    }
+                    else
+                    {
+                        Messaging.Notification($"Argument incorrect or not found, current vertical speed of lights is {Global.verspeed}");
+                    }
+                    break;
                 case "reset":   
                     {
                         Global.hull = .40f;
@@ -90,13 +112,15 @@ namespace Alarms
                         Global.o2 = .15f;
                         Global.firecount = 15;
                         Global.flashcount = 10;
-                        PLXMLOptionsIO.Instance.CurrentOptions.SetStringValue("AlarmSettings", $"{Global.hull} {Global.shield} {Global.o2} {Global.firecount}");
+                        Global.horspeed = 300f;
+                        Global.verspeed = 0f;
+                        PLXMLOptionsIO.Instance.CurrentOptions.SetStringValue("AlarmSettings", $"{Global.hull} {Global.shield} {Global.o2} {Global.firecount} {Global.flashcount} {Global.horspeed} {Global.verspeed}");
                         Messaging.Notification("All values set to defaults!");
                     }
                     break;
                 case "values":
                     {
-                        Messaging.Notification($"Hull %: {Global.hull}\nShield %: {Global.shield}\nOxygen %: {Global.o2}\nFires: {Global.firecount}\nAlert Flashes: {Global.flashcount}");
+                        Messaging.Notification($"Hull %: {Global.hull}\nShield %: {Global.shield}\nOxygen %: {Global.o2}\nFires: {Global.firecount}\nAlert Flashes: {Global.flashcount}\nHor./Ver. Speed: {Global.horspeed}/{Global.verspeed}");
                     }
                     break;
                 default:
@@ -105,9 +129,8 @@ namespace Alarms
             }
             if (yes)
             {
-                PLXMLOptionsIO.Instance.CurrentOptions.SetStringValue("AlarmSettings", $"{Global.hull} {Global.shield} {Global.o2} {Global.firecount} {Global.flashcount}");
+                PLXMLOptionsIO.Instance.CurrentOptions.SetStringValue("AlarmSettings", $"{Global.hull} {Global.shield} {Global.o2} {Global.firecount} {Global.flashcount} {Global.horspeed} {Global.verspeed}");
             }
-            return false;
         }
 
         public bool PublicCommand()
@@ -117,7 +140,7 @@ namespace Alarms
 
         public string UsageExample()
         {
-            return "/alarms [hull | shield | o2 | firecount | flashes | reset | values]";
+            return "/alarms [hull | shield | o2 | firecount | flashes | hspeed | vspeed | reset | values]";
         }
     }
 }
